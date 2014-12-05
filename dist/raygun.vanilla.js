@@ -1,4 +1,4 @@
-/*! Raygun4js - v1.13.1 - 2014-11-12
+/*! Raygun4js - v1.13.1 - 2014-12-05
 * https://github.com/MindscapeHQ/raygun4js
 * Copyright (c) 2014 MindscapeHQ; Licensed MIT */
 (function(window, undefined) {
@@ -1128,11 +1128,11 @@ window.TraceKit = TraceKit;
 
 }(window));
 
-(function (window, $, undefined) {
+var raygunFactory = function (window, $, undefined) {
 
 
   // pull local copy of TraceKit to handle stack trace collection
-  var _traceKit = TraceKit.noConflict(),
+  var _traceKit = TraceKit,
       _raygun = window.Raygun,
       _raygunApiKey,
       _debugMode = false,
@@ -1161,6 +1161,14 @@ window.TraceKit = TraceKit;
       window.Raygun = _raygun;
       return Raygun;
     },
+
+    constructNewRaygun: function () {
+      var rgInstance = window.raygunFactory(window, window.jQuery);
+      window.raygunJsUrlFactory(window, rgInstance);
+
+      return rgInstance;
+    },
+
 
     init: function(key, options, customdata) {
       _raygunApiKey = key;
@@ -1671,7 +1679,7 @@ window.TraceKit = TraceKit;
         },
         'Client': {
           'Name': 'raygun-js',
-          'Version': '1.13.1'
+          'Version': '1.14.0'
         },
         'UserCustomData': finalCustomData,
         'Tags': options.tags,
@@ -1787,14 +1795,20 @@ window.TraceKit = TraceKit;
     xhr.send(data);
   }
 
-  window.Raygun = Raygun;
+  if (!window.Raygun) {
+    window.Raygun = Raygun;
+  }
 
-})(window, window.jQuery);
+  return Raygun;
+
+};
+
+raygunFactory(window, window.jQuery);
 
 
 // js-url - see LICENSE file
 
-(function (window, Raygun) {
+var raygunJsUrlFactory = function (window, Raygun) {
 
   Raygun._private.parseUrl = function(arg, url) {
     function isNumeric(arg) {
@@ -1872,6 +1886,7 @@ window.TraceKit = TraceKit;
     })(arg, url);
 };
 
-window.Raygun._seal();
+};
 
-})(window, window.Raygun);
+raygunJsUrlFactory(window, window.Raygun);
+window.Raygun._seal();
