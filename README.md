@@ -320,6 +320,7 @@ Limited support is available for IE 8 and 9 - errors will only be saved if the r
 
 ## Release History
 
+- 1.14.0 - Support multiple Raygun objects on one page; made Raygun4JS available via CDN; jQuery Ajax errors now have better method names (the function signature) for anonymous functions;
 - 1.13.2 - Tracekit now provides best-effort method names from jQuery Ajax stack traces
 - 1.13.1 - Provide querystrings from AngularJS too (hash in URL broke previous logic); fix stacktrace bug from Firefox that caused source maps to not be processed correctly
 - 1.13.0 - Added anonymous user tracking, enabled by default
