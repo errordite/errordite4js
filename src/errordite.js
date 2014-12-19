@@ -1,6 +1,6 @@
 /*
- * raygun4js
- * https://github.com/MindscapeHQ/raygun4js
+ * errordite4js
+ * https://github.com/errordite/errordite4js
  *
  * Copyright (c) 2013 MindscapeHQ
  * Licensed under the MIT license.
@@ -11,8 +11,8 @@
 
   // pull local copy of TraceKit to handle stack trace collection
   var _traceKit = TraceKit.noConflict(),
-      _raygun = window.Raygun,
-      _raygunApiKey,
+      _errordite = window.Errordite,
+      _errorditeApiKey,
       _debugMode = false,
       _allowInsecureSubmissions = false,
       _ignoreAjaxAbort = false,
@@ -26,22 +26,22 @@
       _filteredKeys,
       _whitelistedScriptDomains = [],
       _beforeSendCallback,
-      _raygunApiUrl = 'https://api.raygun.io',
+      _errorditeApiUrl = 'https://www.errordite.com/receiveerror',
       $document;
 
   if ($) {
     $document = $(document);
   }
 
-  var Raygun =
+  var Errordite =
   {
     noConflict: function () {
-      window.Raygun = _raygun;
-      return Raygun;
+      window.Errordite = _errordite;
+      return Errordite;
     },
 
     init: function(key, options, customdata) {
-      _raygunApiKey = key;
+      _errorditeApiKey = key;
       _traceKit.remoteFetching = false;
       _customData = customdata;
 
@@ -63,28 +63,28 @@
 
       sendSavedErrors();
 
-      return Raygun;
+      return Errordite;
     },
 
     withCustomData: function (customdata) {
       _customData = customdata;
-      return Raygun;
+      return Errordite;
     },
 
     withTags: function (tags) {
       _tags = tags;
-      return Raygun;
+      return Errordite;
     },
 
     attach: function () {
       if (!isApiKeyConfigured()) {
-        return Raygun;
+        return Errordite;
       }
       _traceKit.report.subscribe(processUnhandledException);
       if ($document) {
         $document.ajaxError(processJQueryAjaxError);
       }
-      return Raygun;
+      return Errordite;
     },
 
     detach: function () {
@@ -92,7 +92,7 @@
       if ($document) {
         $document.unbind('ajaxError', processJQueryAjaxError);
       }
-      return Raygun;
+      return Errordite;
     },
 
     send: function (ex, customData, tags) {
@@ -109,7 +109,7 @@
           throw traceKitException;
         }
       }
-      return Raygun;
+      return Errordite;
     },
 
     setUser: function (user, isAnonymous, email, fullName, firstName, uuid) {
@@ -132,16 +132,16 @@
         _user['UUID'] = uuid;
       }
 
-      return Raygun;
+      return Errordite;
     },
 
     resetAnonymousUser: function () {
-      _private.clearCookie('raygun4js-userid');
+      _private.clearCookie('errordite4js-userid');
     },
 
     setVersion: function (version) {
       _version = version;
-      return Raygun;
+      return Errordite;
     },
 
     saveIfOffline: function (enableOffline) {
@@ -149,36 +149,36 @@
         _enableOfflineSave = enableOffline;
       }
 
-      return Raygun;
+      return Errordite;
     },
 
     filterSensitiveData: function (filteredKeys) {
       _filteredKeys = filteredKeys;
-      return Raygun;
+      return Errordite;
     },
 
     whitelistCrossOriginDomains: function (whitelist) {
       _whitelistedScriptDomains = whitelist;
-      return Raygun;
+      return Errordite;
     },
 
     onBeforeSend: function (callback) {
       _beforeSendCallback = callback;
 
-      return Raygun;
+      return Errordite;
     }
   };
 
-  var _private = Raygun._private = Raygun._private || {},
-    _seal = Raygun._seal = Raygun._seal || function () {
-      delete Raygun._private;
-      delete Raygun._seal;
-      delete Raygun._unseal;
+  var _private = Errordite._private = Errordite._private || {},
+    _seal = Errordite._seal = Errordite._seal || function () {
+      delete Errordite._private;
+      delete Errordite._seal;
+      delete Errordite._unseal;
     },
-    _unseal = Raygun._unseal = Raygun._unseal || function () {
-      Raygun._private = _private;
-      Raygun._seal = _seal;
-      Raygun._unseal = _unseal;
+    _unseal = Errordite._unseal = Errordite._unseal || function () {
+      Errordite._private = _private;
+      Errordite._seal = _seal;
+      Errordite._unseal = _unseal;
     };
 
   _private.getUuid = function () {
@@ -269,7 +269,7 @@
        }
     }
 
-    Raygun.send(thrownError || event.type, {
+    Errordite.send(thrownError || event.type, {
       status: jqXHR.status,
       statusText: jqXHR.statusText,
       type: ajaxSettings.type,
@@ -283,10 +283,10 @@
 
 
   function isApiKeyConfigured() {
-    if (_raygunApiKey && _raygunApiKey !== '') {
+    if (_errorditeApiKey && _errorditeApiKey !== '') {
       return true;
     }
-    _private.log("Raygun API key has not been configured, make sure you call Raygun.init(yourApiKey)");
+    _private.log("Errordite API key has not been configured, make sure you call Errordite.init(yourApiKey)");
     return false;
   }
 
@@ -335,13 +335,13 @@
     var dateTime = new Date().toJSON();
 
     try {
-      var key = 'raygunjs=' + dateTime + '=' + getRandomInt();
+      var key = 'errorditejs=' + dateTime + '=' + getRandomInt();
 
       if (typeof localStorage[key] === 'undefined') {
         localStorage[key] = data;
       }
     } catch (e) {
-      _private.log('Raygun4JS: LocalStorage full, cannot save exception');
+      _private.log('Errordite4JS: LocalStorage full, cannot save exception');
     }
   }
 
@@ -356,8 +356,8 @@
   function sendSavedErrors() {
     if (localStorageAvailable() && localStorage && localStorage.length > 0) {
         for (var key in localStorage) {
-        if (key.substring(0, 9) === 'raygunjs=') {
-          sendToRaygun(JSON.parse(localStorage[key]));
+        if (key.substring(0, 9) === 'errorditejs=') {
+          sendToErrordite(JSON.parse(localStorage[key]));
 
           localStorage.removeItem(key);
         }
@@ -367,7 +367,7 @@
 
   function ensureUser() {
     if (!_user && !_disableAnonymousUserTracking) {
-      var userKey = 'raygun4js-userid';
+      var userKey = 'errordite4js-userid';
       var rgUserId = _private.readCookie(userKey);
       var anonymousUuid;
 
@@ -379,7 +379,7 @@
         anonymousUuid = rgUserId;
       }
 
-      Raygun.setUser(anonymousUuid, true, null, null, null, anonymousUuid);
+      Errordite.setUser(anonymousUuid, true, null, null, null, anonymousUuid);
     }
   }
 
@@ -433,7 +433,7 @@
 
     if (_ignore3rdPartyErrors) {
       if (!stackTrace.stack || !stackTrace.stack.length) {
-        _private.log('Raygun4JS: Cancelling send due to null stacktrace');
+        _private.log('Errordite4JS: Cancelling send due to null stacktrace');
         return;
       }
 
@@ -445,7 +445,7 @@
         stackTrace.stack[0].url !== null &&
         stackTrace.stack[0].url.indexOf(domain) === -1 &&
         (stackTrace.stack[0].line === 0 || stackTrace.stack[0].func === '?')) {
-        _private.log('Raygun4JS: cancelling send due to third-party script error with no stacktrace and message');
+        _private.log('Errordite4JS: cancelling send due to third-party script error with no stacktrace and message');
         return;
       }
 
@@ -460,15 +460,19 @@
         }
 
         if (!allowedDomainFound) {
-          _private.log('Raygun4JS: cancelling send due to error on non-origin, non-whitelisted domain');
+          _private.log('Errordite4JS: cancelling send due to error on non-origin, non-whitelisted domain');
 
           return;
         }
       }
     }
 
+    var stackTraceString = '';
+
     if (stackTrace.stack && stackTrace.stack.length) {
       forEach(stackTrace.stack, function (i, frame) {
+        stackTraceString += (frame.func || '[anonymous]') + ' in ' + frame.url + ':line ' + frame.line + ';column ' + frame.column + '\n';
+
         stack.push({
           'LineNumber': frame.line,
           'ColumnNumber': frame.column,
@@ -522,72 +526,77 @@
     } catch (e) {
       var msg = 'Cannot add custom data; may contain circular reference';
       finalCustomData = { error: msg };
-      _private.log('Raygun4JS: ' + msg);
+      _private.log('Errordite4JS: ' + msg);
     }
 
+    var now = new Date();
+
     var payload = {
-      'OccurredOn': new Date(),
-      'Details': {
-        'Error': {
-          'ClassName': stackTrace.name,
-          'Message': custom_message || stackTrace.message || options.status || 'Script error',
-          'StackTrace': stack
-        },
-        'Environment': {
-          'UtcOffset': new Date().getTimezoneOffset() / -60.0,
-          'User-Language': navigator.userLanguage,
-          'Document-Mode': document.documentMode,
-          'Browser-Width': getViewPort().width,
-          'Browser-Height': getViewPort().height,
-          'Screen-Width': screen.width,
-          'Screen-Height': screen.height,
-          'Color-Depth': screen.colorDepth,
-          'Browser': navigator.appCodeName,
-          'Browser-Name': navigator.appName,
-          'Browser-Version': navigator.appVersion,
-          'Platform': navigator.platform
-        },
-        'Client': {
-          'Name': 'raygun-js',
-          'Version': '1.13.1'
-        },
-        'UserCustomData': finalCustomData,
-        'Tags': options.tags,
-        'Request': {
-          'Url': [location.protocol, '//', location.host, location.pathname].join(''),
-          'QueryString': qs,
-          'Headers': {
-            'User-Agent': navigator.userAgent,
-            'Referer': document.referrer,
-            'Host': document.domain
-          }
-        },
-        'Version': _version || 'Not supplied'
-      }
+      Token: _errorditeApiKey,
+      MachineName: document.domain,
+      'Url': location.href,
+      'UserAgent': navigator.userAgent,
+      'ContextData' : {
+        'UtcOffset': new Date().getTimezoneOffset() / -60.0,
+        'User-Language': navigator.userLanguage,
+        'Document-Mode': document.documentMode,
+        'Browser-Width': getViewPort().width,
+        'Browser-Height': getViewPort().height,
+        'Screen-Width': screen.width,
+        'Screen-Height': screen.height,
+        'Color-Depth': screen.colorDepth,
+        'Browser': navigator.appCodeName,
+        'Browser-Name': navigator.appName,
+        'Browser-Version': navigator.appVersion,
+        'Platform': navigator.platform,
+        'Referer': document.referrer
+      },
+      'ExceptionInfo': {
+        'Message': custom_message || stackTrace.message || options.status || 'Script error',
+        'ExceptionType' :  custom_message || stackTrace.message || options.status || 'Script error',
+        'Source': stackTrace.name,
+        'StackTrace': stackTraceString,
+        'MethodName': stackTrace.stack[0].func || '[anonymous]'
+      },
+      'TimestampUtc': now.getUTCFullYear() + '-' + (now.getUTCMonth() + 1) + '-' + now.getUTCDate() + ' ' + now.getUTCHours() + ':' + now.getUTCMinutes() + ':' + now.getUTCSeconds()            
     };
 
-    ensureUser();
-    payload.Details.User = _user;
+    ensureUser();    
+
+    if (_user){
+      extend(payload.ContextData, _user, 'User_');
+    }
+
+    if (finalCustomData){
+      extend(payload.ContextData, finalCustomData, 'Custom_');
+    }
 
     if (typeof _beforeSendCallback === 'function') {
       var mutatedPayload = _beforeSendCallback(payload);
 
       if (mutatedPayload) {
-        sendToRaygun(mutatedPayload);
+        sendToErrordite(mutatedPayload);
       }
     } else {
-      sendToRaygun(payload);
+      sendToErrordite(payload);
     }
   }
 
-  function sendToRaygun(data) {
+  function sendToErrordite(data) {
     if (!isApiKeyConfigured()) {
       return;
     }
 
-    _private.log('Sending exception data to Raygun:', data);
-    var url = _raygunApiUrl + '/entries?apikey=' + encodeURIComponent(_raygunApiKey);
+    _private.log('Sending exception data to Errordite:', data);
+    var url = _errorditeApiUrl;
     makePostCorsRequest(url, JSON.stringify(data));
+  }
+
+  function extend(original, extra, extraPrefix){
+    extraPrefix = extraPrefix || '';
+    for(var key in extra){
+      original[extraPrefix + key] = extra[key];
+    }
   }
 
   // Create the XHR object.
@@ -636,25 +645,25 @@
       };
 
       xhr.onload = function () {
-        _private.log('logged error to Raygun');
+        _private.log('logged error to Errordite');
       };
 
     } else if (window.XDomainRequest) {
       xhr.ontimeout = function () {
         if (_enableOfflineSave) {
-          _private.log('Raygun: saved error locally');
+          _private.log('Errordite: saved error locally');
           offlineSave(data);
         }
       };
 
       xhr.onload = function () {
-        _private.log('logged error to Raygun');
+        _private.log('logged error to Errordite');
         sendSavedErrors();
       };
     }
 
     xhr.onerror = function () {
-      _private.log('failed to log error to Raygun');
+      _private.log('failed to log error to Errordite');
     };
 
     if (!xhr) {
@@ -665,7 +674,7 @@
     xhr.send(data);
   }
 
-  window.Raygun = Raygun;
+  window.Errordite = Errordite;
 
 })(window, window.jQuery);
 

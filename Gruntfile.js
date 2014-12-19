@@ -22,8 +22,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/raygun.js': ['tracekit/tracekit.js', 'src/raygun.tracekit.jquery.js', 'src/raygun.js', 'src/raygun.js-url.js'],
-          'dist/raygun.vanilla.js': ['tracekit/tracekit.js', 'src/raygun.js', 'src/raygun.js-url.js']
+          'dist/errordite.js': ['tracekit/tracekit.js', 'src/errordite.tracekit.jquery.js', 'src/errordite.js', 'src/errordite.js-url.js'],
+          'dist/errordite.vanilla.js': ['tracekit/tracekit.js', 'src/errordite.js', 'src/errordite.js-url.js']
         }
       },
     },
@@ -33,8 +33,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/raygun.min.js': ['dist/raygun.js'],
-          'dist/raygun.vanilla.min.js': ['dist/raygun.vanilla.js']
+          'dist/errordite.min.js': ['dist/errordite.js'],
+          'dist/errordite.vanilla.min.js': ['dist/errordite.vanilla.js']
         }
       },
     },
@@ -53,7 +53,7 @@ module.exports = function(grunt) {
       },
     },
     jasmine : {
-      src : ['src/raygun.tracekit.jquery.js', 'src/raygun.js', 'src/raygunjs-url.js'],
+      src : ['src/errordite.tracekit.jquery.js', 'src/errordite.js', 'src/errordite.js-url.js'],
       options : {
         specs : 'spec/**/*.js',
         vendor : ['tracekit/tracekit.js'],

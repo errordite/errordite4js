@@ -1,8 +1,8 @@
 // js-url - see LICENSE file
 
-(function (window, Raygun) {
+(function (window, Errordite) {
 
-  Raygun._private.parseUrl = function(arg, url) {
+  Errordite._private.parseUrl = function(arg, url) {
     function isNumeric(arg) {
       return !isNaN(parseFloat(arg)) && isFinite(arg);
     }
@@ -78,6 +78,6 @@
     })(arg, url);
 };
 
-window.Raygun._seal();
+window.Errordite._seal();
 
-})(window, window.Raygun);
+})(window, window.Errordite);

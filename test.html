@@ -1,0 +1,17 @@
+<script src="dist/errordite.js"></script>
+<script>
+  Errordite.init('XF01oQkYsXb1SSk1jv/QfQ==', {debugMode: true});
+
+  function error(){
+  	
+  try {
+  // your code
+  throw new Error('oops');
+	}
+catch(e) {
+  Errordite.send(e);
+  }
+	}
+</script>
+
+<a href='javascript:error()'>Click me</a>
